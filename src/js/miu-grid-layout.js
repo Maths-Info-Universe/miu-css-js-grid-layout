@@ -102,27 +102,34 @@ let miuInitGrid = (params) => {
 	if(params && params.selector && params.gridRefWidth){
 		let miuGridSelector = params.selector;
 		let miuGridCellMaxWidth = params.gridRefWidth;
-		let grid = document.querySelector(miuGridSelector);
-		let miuGridCellPrefMarginLR = params.cellLeftRightGap ? params.cellLeftRightGap / 2 : 0;
-		let miuGridCellPrefMarginTB = params.cellTopBottomGap ? params.cellTopBottomGap / 2 : 0;
-		let miuManageSpaces = params.manageSpaces ? params.manageSpaces : 'table';
-		let miuLtr = params.ltr && params.ltr === 'rtl' ? 'right' : 'left';
-		if(grid){
-			miuAddClass(grid, 'miu-grid');
-			grid.setAttribute('miugselector', miuGridSelector);
-			grid.setAttribute('miugcmw', miuGridCellMaxWidth);
-			grid.setAttribute('miugcpmlr', miuGridCellPrefMarginLR);
-			grid.setAttribute('miugcpmtb', miuGridCellPrefMarginTB);
-			grid.setAttribute('miugcms', miuManageSpaces);
-			grid.setAttribute('miugcltr', miuLtr);
-			
-			miuAddClearer(grid);
-			
-			miuWrapGrid(grid);
-			
-			miuWrapGridCell(miuGridSelector);
-			
-			miuUpdateGridCellWidth(grid, miuGridCellMaxWidth, miuGridCellPrefMarginLR, miuGridCellPrefMarginTB, miuManageSpaces, miuLtr);
+		let grids = document.querySelectorAll(miuGridSelector);
+		let i = 0;
+		for(i = 0; i < grids.length; i++){
+			let grid = grids[0];
+			let miuGridCellPrefMarginLR = params.cellLeftRightGap ? params.cellLeftRightGap / 2 : 0;
+			let miuGridCellPrefMarginTB = params.cellTopBottomGap ? params.cellTopBottomGap / 2 : 0;
+			let miuManageSpaces = params.manageSpaces ? params.manageSpaces : 'table';
+			let miuLtr = params.ltr && params.ltr === 'rtl' ? 'right' : 'left';
+			if(grid){
+				miuAddClass(grid, 'miu-grid');
+				let uniqueClass = 'miu-grid-' + (2475 + document.querySelectorAll('.miu-grid').length);
+				miuAddClass(grid, uniqueClass);
+				let gSelector = '.' + uniqueClass;
+				grid.setAttribute('miugselector', gSelector);
+				grid.setAttribute('miugcmw', miuGridCellMaxWidth);
+				grid.setAttribute('miugcpmlr', miuGridCellPrefMarginLR);
+				grid.setAttribute('miugcpmtb', miuGridCellPrefMarginTB);
+				grid.setAttribute('miugcms', miuManageSpaces);
+				grid.setAttribute('miugcltr', miuLtr);
+				
+				miuAddClearer(grid);
+				
+				miuWrapGrid(grid);
+				
+				miuWrapGridCell(gSelector);
+				
+				miuUpdateGridCellWidth(grid, miuGridCellMaxWidth, miuGridCellPrefMarginLR, miuGridCellPrefMarginTB, miuManageSpaces, miuLtr);
+			}
 		}
 	}
 };
