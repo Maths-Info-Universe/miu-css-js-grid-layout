@@ -65,7 +65,7 @@ let miuGetComputedStyleNumValue = (element, property) => {
 };
 
 let miuUpdateGridCellWidth = (grid, miuGridCellMaxWidth, miuGridCellPrefMarginLR, miuGridCellPrefMarginTB, miuAutoFillSpaces, miuLtr) => {
-	let miuGridSelector = grid.getAttribute('miugselector');
+	let miuGridSelector = grid.getAttribute('miugSelector');
 	let gridWidth = miuGetComputedStyleNumValue(grid, 'width');
 	let numPerLine = Math.floor(gridWidth / (miuGridCellMaxWidth + 2 * miuGridCellPrefMarginLR));
 	let newGcWidth = (gridWidth - 0.333 * numPerLine) / numPerLine;
@@ -99,28 +99,30 @@ let miuUpdateGridCellWidth = (grid, miuGridCellMaxWidth, miuGridCellPrefMarginLR
 
 /* The function that inits the grid */
 let miuInitGrid = (params) => {
-	if(params && params.selector && params.gridRefWidth){
+	if(params && params.selector){
 		let miuGridSelector = params.selector;
-		let miuGridCellMaxWidth = params.gridRefWidth;
 		let grids = document.querySelectorAll(miuGridSelector);
 		let i = 0;
 		for(i = 0; i < grids.length; i++){
-			let grid = grids[0];
-			let miuGridCellPrefMarginLR = params.cellLeftRightGap ? params.cellLeftRightGap / 2 : 0;
-			let miuGridCellPrefMarginTB = params.cellTopBottomGap ? params.cellTopBottomGap / 2 : 0;
-			let miuManageSpaces = params.manageSpaces ? params.manageSpaces : 'table';
-			let miuLtr = params.ltr && params.ltr === 'rtl' ? 'right' : 'left';
+			let grid = grids[i];
+			let miuGridCellMaxWidth = params.gridRefWidth ? params.gridRefWidth : ((grid.getAttribute('miugGridRefWidth')) ? parseFloat(grid.getAttribute('miugGridRefWidth'), 10) : 200);
+			let miuGridCellPrefMarginLR = params.cellLeftRightGap ? params.cellLeftRightGap / 2 : ((grid.getAttribute('miugCellLeftRightGap')) ? parseFloat(grid.getAttribute('miugCellLeftRightGap'), 10) : 0);
+			let miuGridCellPrefMarginTB = params.cellTopBottomGap ? params.cellTopBottomGap / 2 : ((grid.getAttribute('miugCellTopBottomGap')) ? parseFloat(grid.getAttribute('miugCellTopBottomGap'), 10) : 0);
+			let miuManageSpaces = params.manageSpaces ? params.manageSpaces : ((grid.getAttribute('miugManageSpaces')) ? grid.getAttribute('miugManageSpaces') : 'table');
+			let miuLtr = params.ltr ? params.ltr : ((grid.getAttribute('miugLtr')) ? grid.getAttribute('miugLtr') : 'ltr');
+			
 			if(grid){
 				miuAddClass(grid, 'miu-grid');
 				let uniqueClass = 'miu-grid-' + (2475 + document.querySelectorAll('.miu-grid').length);
 				miuAddClass(grid, uniqueClass);
 				let gSelector = '.' + uniqueClass;
-				grid.setAttribute('miugselector', gSelector);
-				grid.setAttribute('miugcmw', miuGridCellMaxWidth);
-				grid.setAttribute('miugcpmlr', miuGridCellPrefMarginLR);
-				grid.setAttribute('miugcpmtb', miuGridCellPrefMarginTB);
-				grid.setAttribute('miugcms', miuManageSpaces);
-				grid.setAttribute('miugcltr', miuLtr);
+				grid.setAttribute('miugSelector', gSelector);
+				grid.setAttribute('miugGridRefWidth', miuGridCellMaxWidth);
+				grid.setAttribute('miugCellLeftRightGap', miuGridCellPrefMarginLR * 2);
+				grid.setAttribute('miugCellTopBottomGap', miuGridCellPrefMarginTB * 2);
+				grid.setAttribute('miugManageSpaces', miuManageSpaces);
+				grid.setAttribute('miugLtr', miuLtr);
+				miuLtr = miuLtr === 'rtl' ? 'right' : 'left';
 				
 				miuAddClearer(grid);
 				
@@ -142,11 +144,11 @@ document.onreadystatechange = () => {
 			let i = 0;
 			for(i = 0; i < grids.length; i++){
 				let grid = grids[i];
-				let miuGridCellMaxWidth = parseFloat(grid.getAttribute('miugcmw'), 10);
-				let miuGridCellPrefMarginLR = parseFloat(grid.getAttribute('miugcpmlr'), 10);
-				let miuGridCellPrefMarginTB = parseFloat(grid.getAttribute('miugcpmtb'), 10);
-				let miuManageSpaces = grid.getAttribute('miugcms');
-				let miuLtr = grid.getAttribute('miugcltr');
+				let miuGridCellMaxWidth = parseFloat(grid.getAttribute('miugGridRefWidth'), 10);
+				let miuGridCellPrefMarginLR = parseFloat(grid.getAttribute('miugCellLeftRightGap'), 10) / 2;
+				let miuGridCellPrefMarginTB = parseFloat(grid.getAttribute('miugCellTopBottomGap'), 10) / 2;
+				let miuManageSpaces = grid.getAttribute('miugManageSpaces');
+				let miuLtr = grid.getAttribute('miugLtr') === 'rtl' ? 'right' : 'left';
 				miuUpdateGridCellWidth(grid, miuGridCellMaxWidth, miuGridCellPrefMarginLR, miuGridCellPrefMarginTB, miuManageSpaces, miuLtr);
 			}
 		};

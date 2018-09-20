@@ -15,7 +15,29 @@
 	</head>
 	<body>
 		<!-- A simple grid to display images -->
-		<div id="my-miu-grid">
+		<div id="my-miu-grid" class="my-miui">
+			<div class="miu-grid-cell">
+				<div class="content">
+					
+				</div>
+			</div>
+			<div class="miu-grid-cell">
+				<div class="content">
+					
+				</div>
+			</div>
+			<div class="miu-grid-cell">
+				<div class="content-2">
+					
+				</div>
+			</div>
+			<div class="miu-grid-cell">
+				<div class="content">
+					
+				</div>
+			</div>
+		</div>
+		<div id="my-miu-grid" class="my-miui">
 			<div class="miu-grid-cell">
 				<div class="content">
 					
@@ -99,11 +121,11 @@
 		</div>
 		<script type="text/javascript">
 			miuInitGrid({
-				selector: '#my-miu-grid',
+				selector: '.my-miui',
 				gridRefWidth: 200,
-				cellLeftRightGap: 10,
-				cellTopBottomGap: 10,
-				manageSpaces: 'table', /* no or autofill or table-autofill*/
+				cellLeftRightGap: 20,
+				cellTopBottomGap: 20,
+				manageSpaces: 'no',
 				ltr: 'ltr'
 			});
 		</script>
