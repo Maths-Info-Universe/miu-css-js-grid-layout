@@ -41,6 +41,7 @@ function miuLibFunctions () {
 
 	this.miuAddClearer = function(grid) {
 		let clearer = document.createElement('div');
+		this.miuAddClass(clearer, 'miu-clearer');
 		clearer.style.clear = 'both';
 		grid.appendChild(clearer);
 	};
