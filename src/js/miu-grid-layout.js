@@ -188,9 +188,16 @@ function miuGridProcessor () {
 			let miuGridSelector = grid.getAttribute('miugSelector');
 			let miuGridInner = document.querySelector(miuGridSelector + ' > .miu-grid-inner');
 			let cells = document.querySelectorAll(miuGridSelector + ' > .miu-grid-inner > .miu-grid-cell');
-			let i = 0;
-			for(i = numPerLine; i < cells.length; i += numPerLine){
-				miuGridInner.insertBefore(miuLib.miuGetClearer(), cells[i]);
+			let i = 0, totalProp = 0;
+			for(i = 0; i < cells.length; i++){
+				let cell = cells[i];
+				let prop = miuGetProp(cell);
+				if(totalProp + prop > numPerLine){
+					miuGridInner.insertBefore(miuLib.miuGetClearer(), cell);
+					totalProp = prop;
+				}else{
+					totalProp += prop;
+				}
 			}
 		}
 	};
