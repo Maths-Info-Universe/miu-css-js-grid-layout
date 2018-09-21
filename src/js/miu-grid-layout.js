@@ -12,6 +12,8 @@ function miuLibFunctions () {
 	};
 
 	this.miuHasClass = function(element, classToCheck) {
+		if(!element || !element.className)
+			return false;
 		let arr = element.className.split(' ');
 		return arr.indexOf(classToCheck) != -1;
 	};
@@ -45,10 +47,38 @@ function miuLibFunctions () {
 		clearer.style.clear = 'both';
 		return clearer;
 	};
+	
+	this.miuGetGap = function(width, height) {
+		let gap = document.createElement('div');
+		this.miuAddClass(gap, 'miu-gap');
+		gap.style.width = (width == -1) ? 'auto' : width + 'px';
+		gap.style.height = (height == -1) ? 'auto' : height + 'px';
+		gap.style.marginTop = '0px';
+		gap.style.marginBottom = '0px';
+		gap.style.marginLeft = '0px';
+		gap.style.marginRight = '0px';
+		return gap;
+	};
 
 	this.miuAddClearer = function(element) {
 		let clearer = this.miuGetClearer();
 		element.appendChild(clearer);
+	};
+	
+	this.miuAddGap = function(element, width, height) {
+		let gap = this.miuGetGap(width, height);
+		element.appendChild(gap);
+	};
+	
+	this.miuRemoveChildsWithClass = function(parent, className) {
+		let childs = parent.childNodes;
+		let i = 0;
+		for(i = 0; i < childs.length; i++){
+			let child = childs[i];
+			if(this.miuHasClass(child, className)){
+				parent.removeChild(child);
+			}
+		}
 	};
 }
 var miuLib = new miuLibFunctions;
@@ -101,14 +131,10 @@ function miuGridProcessor () {
 
 	let miuUpdateGridCellsWidth = (grid, miuGridCellMaxWidth, miuGridCellPrefMarginLR, miuGridCellPrefMarginTB, miuAutoFillSpaces, miuLtr) => {
 		let miuGridSelector = grid.getAttribute('miugSelector');
-		let gridWidth = miuLib.miuGetComputedStyleNumValue(grid, 'width');
-		let numPerLine = Math.floor(gridWidth / (miuGridCellMaxWidth + 2 * miuGridCellPrefMarginLR));
-		let newGcWidth = (gridWidth - 0.333 * numPerLine) / numPerLine;
-		let newGcMargin = 0;
-		if(newGcWidth >= (miuGridCellMaxWidth + 2 * miuGridCellPrefMarginLR)){
-			newGcMargin = miuGridCellPrefMarginLR;
-			newGcWidth -= 4 * miuGridCellPrefMarginLR;
-		}
+		let gridWidth = miuLib.miuGetComputedStyleNumValue(grid, 'width') + 5;
+		let numPerLine = Math.floor(gridWidth / ((miuGridCellMaxWidth) + 2 * miuGridCellPrefMarginLR));
+		let newGcWidth = (gridWidth / numPerLine) - (2 * miuGridCellPrefMarginLR);
+		let newGcMargin = miuGridCellPrefMarginLR;
 		
 		document.querySelector(miuGridSelector + ' > .miu-grid-inner').style.width = Math.floor(((newGcWidth + 1 + 2 * newGcMargin) * numPerLine)) + 'px';
 		
@@ -123,6 +149,8 @@ function miuGridProcessor () {
 			toRemove += miuLib.miuGetComputedStyleNumValue(cell, 'border-left-width');
 			toRemove += miuLib.miuGetComputedStyleNumValue(cell, 'border-right-width');
 			let cellWidth = newGcWidth * prop + (2 * k) - toRemove;
+			if(cellWidth < (miuGridCellMaxWidth * prop))
+				cellsInner[i].style.width = cellWidth + 'px';
 			cell.style.width = cellWidth + 'px';
 			cell.style.height = 'auto';
 			cell.style.position = 'relative';
@@ -133,10 +161,10 @@ function miuGridProcessor () {
 			cell.style.cssFloat = miuLtr;
 		}
 		
-		miuManageSpaces(grid, miuAutoFillSpaces, numPerLine, miuGridCellPrefMarginTB);
+		miuManageSpaces(grid, miuAutoFillSpaces, numPerLine, miuGridCellPrefMarginTB, miuLtr);
 	};
 	
-	let miuManageSpaces = (grid, miuAutoFillSpaces, numPerLine, miuGridCellPrefMarginTB) => {
+	let miuManageSpaces = (grid, miuAutoFillSpaces, numPerLine, miuGridCellPrefMarginTB, miuLtr) => {
 		if(miuAutoFillSpaces === 'table'){
 			miuRemoveClearers(grid);
 			miuAddClearers(grid, numPerLine);
@@ -145,18 +173,14 @@ function miuGridProcessor () {
 		if(miuAutoFillSpaces === 'autofill'){
 			miuRemoveClearers(grid);
 			miuAddClearers(grid, numPerLine);
-			miuProcessAutoFillSpaces(grid, numPerLine, miuGridCellPrefMarginTB);
+			miuProcessAutoFillSpaces(grid, numPerLine, miuGridCellPrefMarginTB, miuLtr);
 		}
 	};
 	
 	let miuRemoveClearers = (grid) => {
 		let miuGridSelector = grid.getAttribute('miugSelector');
 		let miuGridInner = document.querySelector(miuGridSelector + ' > .miu-grid-inner');
-		let clearers = document.querySelectorAll(miuGridSelector + ' > .miu-grid-inner > .miu-clearer');
-		let i = 0;
-		for(i = 0; i < clearers.length; i++){
-			miuGridInner.removeChild(clearers[i]);
-		}
+		miuLib.miuRemoveChildsWithClass(miuGridInner, 'miu-clearer');
 	};
 	
 	let miuAddClearers = (grid, numPerLine) => {
@@ -171,7 +195,7 @@ function miuGridProcessor () {
 		}
 	};
 	
-	let miuProcessAutoFillSpaces = (grid, numPerLine, miuGridCellPrefMarginTB) => {
+	let miuProcessAutoFillSpaces = (grid, numPerLine, miuGridCellPrefMarginTB, miuLtr) => {
 		if(numPerLine > 1){
 			let miuGridSelector = grid.getAttribute('miugSelector');
 			let miuGridInner = document.querySelector(miuGridSelector + ' > .miu-grid-inner');
