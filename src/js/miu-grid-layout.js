@@ -38,12 +38,17 @@ function miuLibFunctions () {
 		let value = window.getComputedStyle(element).getPropertyValue(property);
 		return parseFloat(value.substring(0, value.length - 2), 10);
 	};
-
-	this.miuAddClearer = function(grid) {
+	
+	this.miuGetClearer = function() {
 		let clearer = document.createElement('div');
 		this.miuAddClass(clearer, 'miu-clearer');
 		clearer.style.clear = 'both';
-		grid.appendChild(clearer);
+		return clearer;
+	};
+
+	this.miuAddClearer = function(element) {
+		let clearer = this.miuGetClearer();
+		element.appendChild(clearer);
 	};
 }
 var miuLib = new miuLibFunctions;
@@ -74,7 +79,7 @@ function miuGridProcessor () {
 		return 1;
 	};
 
-	let miuWrapGridCell = (miuGridSelector) => {
+	let miuWrapGridCells = (miuGridSelector) => {
 		let cells = document.querySelectorAll(miuGridSelector + ' > .miu-grid-inner > .miu-grid-cell');
 		let i = 0, cellInner;
 		for(i = 0; i < cells.length; i++){
@@ -94,7 +99,7 @@ function miuGridProcessor () {
 		miuLib.miuWrap(grid, gridInner);
 	}
 
-	let miuUpdateGridCellWidth = (grid, miuGridCellMaxWidth, miuGridCellPrefMarginLR, miuGridCellPrefMarginTB, miuAutoFillSpaces, miuLtr) => {
+	let miuUpdateGridCellsWidth = (grid, miuGridCellMaxWidth, miuGridCellPrefMarginLR, miuGridCellPrefMarginTB, miuAutoFillSpaces, miuLtr) => {
 		let miuGridSelector = grid.getAttribute('miugSelector');
 		let gridWidth = miuLib.miuGetComputedStyleNumValue(grid, 'width');
 		let numPerLine = Math.floor(gridWidth / (miuGridCellMaxWidth + 2 * miuGridCellPrefMarginLR));
@@ -125,6 +130,45 @@ function miuGridProcessor () {
 			cell.style.marginBottom = miuGridCellPrefMarginTB + 'px';
 			cell.style.cssFloat = miuLtr;
 		}
+		
+		miuManageSpaces(grid, miuAutoFillSpaces, numPerLine);
+	};
+	
+	let miuManageSpaces = (grid, miuAutoFillSpaces, numPerLine) => {
+		if(miuAutoFillSpaces === 'table'){
+			miuRemoveClearers(grid);
+			miuAddClearers(grid, numPerLine);
+		}
+		
+		if(miuAutoFillSpaces === 'autofill'){
+			miuRemoveClearers(grid);
+			miuAddClearers(grid, numPerLine);
+			miuAutoFillSpaces(grid, numPerLine);
+		}
+	};
+	
+	let miuRemoveClearers = (grid) => {
+		let miuGridSelector = grid.getAttribute('miugSelector');
+		let miuGridInner = document.querySelector(miuGridSelector + ' > .miu-grid-inner');
+		let clearers = document.querySelectorAll(miuGridSelector + ' > .miu-grid-inner > .miu-clearer');
+		let i = 0;
+		for(i = 0; i < clearers.length; i++){
+			miuGridInner.removeChild(clearers[i]);
+		}
+	};
+	
+	let miuAddClearers = (grid, numPerLine) => {
+		let miuGridSelector = grid.getAttribute('miugSelector');
+		let miuGridInner = document.querySelector(miuGridSelector + ' > .miu-grid-inner');
+		let cells = document.querySelectorAll(miuGridSelector + ' > .miu-grid-inner > .miu-grid-cell');
+		let i = 0;
+		for(i = numPerLine; i < cells.length; i += numPerLine){
+			miuGridInner.insertBefore(miuLib.miuGetClearer(), cells[i]);
+		}
+	};
+	
+	let miuAutoFillSpaces = (grid, numPerLine) => {
+		
 	};
 
 	/* The function that inits the grid */
@@ -155,13 +199,13 @@ function miuGridProcessor () {
 						grid.setAttribute('miugLtr', miuLtr);
 						miuLtr = miuLtr === 'rtl' ? 'right' : 'left';
 						
-						miuLib.miuAddClearer(grid);
-						
 						miuWrapGrid(grid);
 						
-						miuWrapGridCell(gSelector);
+						miuLib.miuAddClearer(grid);
 						
-						miuUpdateGridCellWidth(grid, miuGridCellMaxWidth, miuGridCellPrefMarginLR, miuGridCellPrefMarginTB, miuManageSpaces, miuLtr);
+						miuWrapGridCells(gSelector);
+						
+						miuUpdateGridCellsWidth(grid, miuGridCellMaxWidth, miuGridCellPrefMarginLR, miuGridCellPrefMarginTB, miuManageSpaces, miuLtr);
 					}
 				}
 			}
@@ -193,7 +237,7 @@ function miuGridProcessor () {
 					let miuGridCellPrefMarginTB = parseFloat(grid.getAttribute('miugCellTopBottomGap'), 10) / 2;
 					let miuManageSpaces = grid.getAttribute('miugManageSpaces');
 					let miuLtr = grid.getAttribute('miugLtr') === 'rtl' ? 'right' : 'left';
-					miuUpdateGridCellWidth(grid, miuGridCellMaxWidth, miuGridCellPrefMarginLR, miuGridCellPrefMarginTB, miuManageSpaces, miuLtr);
+					miuUpdateGridCellsWidth(grid, miuGridCellMaxWidth, miuGridCellPrefMarginLR, miuGridCellPrefMarginTB, miuManageSpaces, miuLtr);
 				}
 			};
 		}
