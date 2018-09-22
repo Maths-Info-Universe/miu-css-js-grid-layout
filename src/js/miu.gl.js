@@ -5,8 +5,8 @@
 function miuLibFunctions () {
 	/* A simple function to add a new class value to an element */
 	this.miuAddClass = function(element, newClass) {
-		let arr = element.className.split(' ');
-		if (arr.indexOf(newClass) == -1) {
+		let myArr = element.className.split(' ');
+		if (myArr.indexOf(newClass) == -1) {
 			element.className += ' ' + newClass;
 		}
 	};
@@ -14,16 +14,16 @@ function miuLibFunctions () {
 	this.miuHasClass = function(element, classToCheck) {
 		if(!element || !element.className)
 			return false;
-		let arr = element.className.split(' ');
-		return arr.indexOf(classToCheck) != -1;
+		let myArr = element.className.split(' ');
+		return myArr.indexOf(classToCheck) != -1;
 	};
 
 	this.miuRemoveClass = function(element, classToRemove) {
-		let arr = element.className.split(' ');
+		let myArr = element.className.split(' ');
 		let i = 0, newClassName = '';
-		for(i = 0; i < arr.length; i++){
-			if(arr[i] !== classToRemove){
-				newClassName += arr[i] + ' ';
+		for(i = 0; i < myArr.length; i++){
+			if(myArr[i] !== classToRemove){
+				newClassName += myArr[i] + ' ';
 			}
 		}
 		element.className = newClassName.trim();
@@ -95,10 +95,10 @@ function miuGridProcessor () {
 	
 	/* A simple function to get the proportion of a cell */
 	let miuGetProp = (cell) => {
-		let arr = cell.className.split(' ');
+		let myArr = cell.className.split(' ');
 		let i = 0;
-		for(i = 0; i < arr.length; i++){
-			let propClass = arr[i];
+		for(i = 0; i < myArr.length; i++){
+			let propClass = myArr[i];
 			if(/miu-grid-cell-[0-9]{0,1}(d[1-9]){0,1}/.test(propClass)){
 				let prop = propClass.replace('miu-grid-cell-', '');
 				prop = prop.replace('d', '.');
