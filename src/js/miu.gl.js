@@ -130,12 +130,6 @@ function miuGridProcessor () {
 	}
 
 	let miuUpdateGridCellsWidth = (grid, miuGridContentWidthFixed, miuGridCellMaxWidth, miuGridCellPrefMarginLR, miuGridCellPrefMarginTB, miuAutoFillSpaces, miuGridFullResponsive, miuLtr) => {
-		if(miuGridFullResponsive && miuAutoFillSpaces === 'autofill'){
-			console.log('Full responsive is useless in autofill display mode! Disabling...');
-			miuGridFullResponsive = false;
-			grid.setAttribute('miugGridFullResponsive', miuGridFullResponsive);
-			console.log('Full responsive disabled!');
-		}
 		let miuGridIsResponsive = miuGridContentWidthFixed === 'responsive';
 		let miuGridSelector = grid.getAttribute('miugSelector');
 		let gridWidth = miuLib.miuGetComputedStyleNumValue(grid, 'width') + 5;
@@ -146,6 +140,23 @@ function miuGridProcessor () {
 		let gridInner = document.querySelector(miuGridSelector + ' > .miu-grid-inner');
 		let gridInnerWidth = Math.floor(((newGcWidth + 1 + 2 * newGcMargin) * numPerLine));
 		gridInner.style.width = gridInnerWidth + 'px';
+		
+		let cells = document.querySelectorAll(miuGridSelector + ' > .miu-grid-inner > .miu-grid-cell');
+		let multi = false;
+		let i = 0;
+		for(i = 0; i < cells.length; i++){
+			if(miuGetProp(cells[i]) != 1){
+				multi = true;
+				break;
+			}
+		}
+		
+		if(miuGridFullResponsive && miuAutoFillSpaces === 'autofill' && !multi){
+			console.log('Full responsive is useless in autofill display mode without multicol and/or splitted cells! Disabling...');
+			miuGridFullResponsive = false;
+			grid.setAttribute('miugGridFullResponsive', miuGridFullResponsive);
+			console.log('Full responsive disabled!');
+		}
 		
 		let cellsInner = document.querySelectorAll(miuGridSelector + ' > .miu-grid-inner > .miu-grid-cell > .miu-grid-cell-inner');
 		let lineCells = [], j = 0, propSum = 0;
@@ -292,7 +303,7 @@ function miuGridProcessor () {
 						let cell = cells[i + j];
 						if(cell){
 							cell.style.height = (maxHeight + toRetrieve[j]) + 'px';
-							toRetrieve[j] += (maxHeight - lineHeights[j] - miuGridCellPrefMarginTB);
+							toRetrieve[j] += (maxHeight - lineHeights[j] - miuGridCellPrefMarginTB + miuLib.miuGetComputedStyleNumValue(cell, 'border-bottom-width'));
 						}
 					}
 				}

@@ -7,7 +7,7 @@
 		<style>
 			html{background-color: white;}
 			body{width: 90%; margin: 100px auto 100px auto;}
-			.miu-grid-cell{border: 1px solid blue;}
+			.miu-grid-cell{padding: 8px;}
 			.content{background-color: green; height: 100px;}
 			.content-2{background-color: red; height: 200px;}
 			.content-3{background-color: yellow; height: 250px;}
@@ -15,7 +15,7 @@
 	</head>
 	<body>
 		<!-- A simple grid to display images -->
-		<div id="my-miu-grid" class="my-miui">
+		<div id="my-miu-grid" class="">
 			<div class="miu-grid-cell">
 				<div class="content">
 					
@@ -119,11 +119,11 @@
 		</div>
 		<script type="text/javascript">
 			miuGrid.miuInitGrid({
-				selector: '.my-miui',
-				gridContentWidthFixed: 'fixed',
+				selector: '#my-miu-grid',
+				gridContentWidthFixed: 'responsive',
 				gridRefWidth: 200,
-				cellLeftRightGap: 5,
-				cellTopBottomGap: 5,
+				cellLeftRightGap: 0,
+				cellTopBottomGap: 0,
 				gridDisplay: 'autofill',
 				gridFullResponsive: true,
 				ltr: 'ltr'

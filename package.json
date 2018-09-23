@@ -1,0 +1,20 @@
+{
+  "name": "miu-gl",
+  "version": "0.0.0",
+  "description": "",
+  "license": "MIT",
+  "main": "src/js/miu.gl.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/MegaMaxim10/miu-css-js-grid-layout.git"
+  },
+  "keywords": ["HTML", "JS", "Grid Layout", "CSS", "Responsive"],
+  "author": "Zekeng Ndadji Milliam Maxime",
+  "bugs": {
+    "url": "https://github.com/MegaMaxim10/miu-css-js-grid-layout/issues"
+  },
+  "homepage": "https://github.com/MegaMaxim10/miu-css-js-grid-layout"
+}
