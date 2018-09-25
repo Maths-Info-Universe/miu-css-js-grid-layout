@@ -293,10 +293,10 @@ function miuGridProcessor () {
 	this.initGrid = function (p){
 		if(p && p.selector){
 			var selector = p.selector,
-				grids = document.querySelectorAll(selector),
+				gs = document.querySelectorAll(selector),
 				i = 0;
-			for(i = 0; i < grids.length; i++){
-				var g = grids[i];
+			for(i = 0; i < gs.length; i++){
+				var g = gs[i];
 				if(!miuLib.hasClass(g, 'miu-g')){
 					var gcwf = p.cwfixed ? p.cwfixed : ((g.getAttribute('miu-g-cwfixed')) ? g.getAttribute('miu-g-cwfixed') : 'fixed');
 					var gcmw = p.refwidth ? p.refwidth : ((g.getAttribute('miu-g-refwidth')) ? parseFloat(g.getAttribute('miu-g-refwidth'), 10) : 200);
@@ -330,7 +330,7 @@ function miuGridProcessor () {
 		}
 	};
 
-	/* We listen to window resize event so to update our grids */
+	/* We listen to window resize event so to update our gs */
 	document.onreadystatechange = function() {
 		if (document.readyState === 'interactive') {
 			var gsToInit = document.querySelectorAll('.miu-g-container'),
@@ -341,15 +341,15 @@ function miuGridProcessor () {
 					miuLib.addClass(gToInit, 'miu-g-ai');
 					var aiClass = 'miu-g-ai-' + (1356 + i);
 					miuLib.addClass(gToInit, aiClass);
-					this.initGrid({selector: '.' + aiClass});
+					miuGrid.initGrid({selector: '.' + aiClass});
 					miuLib.remClass(gToInit, aiClass);
 				}
 			}
 			window.onresize = function(e) {
-				var grids = document.querySelectorAll('.miu-g'),
+				var gs = document.querySelectorAll('.miu-g'),
 					i = 0;
-				for(i = 0; i < grids.length; i++){
-					var g = grids[i],
+				for(i = 0; i < gs.length; i++){
+					var g = gs[i],
 						gcwf = g.getAttribute('miu-g-cwfixed'),
 						gcmw = parseFloat(g.getAttribute('miu-g-refwidth'), 10),
 						gcpmlr = parseFloat(g.getAttribute('miu-g-lrgap'), 10) / 2,
