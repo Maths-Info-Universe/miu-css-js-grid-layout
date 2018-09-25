@@ -130,11 +130,12 @@ function miuGridProcessor () {
 	};
 
 	var updateGridCW = function(g, gcwf, gcmw, gcpmlr, gcpmtb, afs, gfr, ltr) {
-		var gridIsResp = gcwf === 'responsive',
+		var gcr = gcwf === 'responsive',
 			selector = g.getAttribute('miu-g-selector'),
 			gwd = miuLib.getStyleVal(g, 'width') + 5,
-			npl = Math.floor(gwd / ((gcmw) + 2 * gcpmlr)),
-			ngcwd = (gwd / npl) - (2 * gcpmlr),
+			npl = Math.floor(gwd / ((gcmw) + 2 * gcpmlr));
+			if(npl < 1) npl = 1;
+		var ngcwd = (gwd / npl) - (2 * gcpmlr),
 			ngcmg = gcpmlr,
 			gIn = document.querySelector(selector + ' > .miu-g-in'),
 			gInWd = Math.floor(((ngcwd + 1 + 2 * ngcmg) * npl));
@@ -157,8 +158,7 @@ function miuGridProcessor () {
 		var csIn = document.querySelectorAll(selector + ' > .miu-g-in > .miu-g-cell > .miu-g-cell-in'),
 			lcs = [], j = 0, psum = 0;
 		for(i = 0; i < csIn.length; i++){
-			var c = csIn[i].parentNode,
-				p = getProp(c);
+			var c = csIn[i].parentNode, p = getProp(c);
 			csIn[i].style.width = (gcmw * p) + 'px';
 			var k = ngcmg * (p - 1);
 			var toRem = miuLib.getStyleVal(c, 'padding-left');
@@ -166,15 +166,12 @@ function miuGridProcessor () {
 			toRem += miuLib.getStyleVal(c, 'border-left-width');
 			toRem += miuLib.getStyleVal(c, 'border-right-width');
 			var cellWd = ngcwd * p + (2 * k) - toRem;
-			if(cellWd < (gcmw * p))
-				csIn[i].style.width = cellWd + 'px';
+			if(!gfr && cellWd < gcmw){cellWd = gcmw;}
 			if(gfr && cellWd >= (gInWd - 2 * ngcmg)){
 				cellWd = (gInWd - 2 * ngcmg);
 				csIn[i].style.width = cellWd + 'px';
 			}
-			if(gridIsResp){
-				csIn[i].style.width = cellWd + 'px';
-			}
+			if(gcr){csIn[i].style.width = cellWd + 'px';}
 			c.style.width = cellWd + 'px';
 			c.style.height = 'auto';
 			c.style.position = 'relative';
@@ -186,25 +183,19 @@ function miuGridProcessor () {
 			if(gfr){
 				if(psum < npl && (psum + p > npl)){
 					var remSpace = gInWd - ((ngcwd + lcs.length) * psum  + (lcs.length * 2 * ngcmg)),
-						toAdd = remSpace / lcs.length,
-						k = 0;
+						toAdd = remSpace / lcs.length, k = 0;
 					for(k = 0; k < lcs.length; k++){
-						if(gridIsResp){
+						if(gcr){
 							csIn[lcs[k].index].style.width = (miuLib.getStyleVal(csIn[lcs[k].index], 'width') + toAdd) + 'px';
 						}
 						lcs[k].c.style.width = (miuLib.getStyleVal(lcs[k].c, 'width') + toAdd) + 'px';
 					}
-					lcs = [{'index': i, 'c': c}];
-					j = 1;
-					psum = p;
+					lcs = [{'index': i, 'c': c}]; j = 1; psum = p;
 				}else{
 					if(psum == npl){
-						j = 1;
-						psum = p;
-						lcs = [{'index': i, 'c': c}];
+						j = 1; psum = p; lcs = [{'index': i, 'c': c}];
 					}else{
-						psum += p;
-						lcs[j++] = {'index': i, 'c': c};
+						psum += p; lcs[j++] = {'index': i, 'c': c};
 					}
 				}
 			}
@@ -212,10 +203,9 @@ function miuGridProcessor () {
 		if(gfr){
 			if(psum < npl){
 				var remSpace = gInWd - ((ngcwd + lcs.length) * psum  + (lcs.length * 2 * ngcmg)),
-					toAdd = remSpace / lcs.length,
-					k = 0;
+					toAdd = remSpace / lcs.length, k = 0;
 				for(k = 0; k < lcs.length; k++){
-					if(gridIsResp){
+					if(gcr){
 						csIn[lcs[k].index].style.width = (miuLib.getStyleVal(csIn[lcs[k].index], 'width') + toAdd) + 'px';
 					}
 					lcs[k].c.style.width = (miuLib.getStyleVal(lcs[k].c, 'width') + toAdd) + 'px';
@@ -227,13 +217,10 @@ function miuGridProcessor () {
 	
 	var gd = function(g, afs, npl, gcpmtb, ltr) {
 		if(afs === 'table'){
-			remClrs(g);
-			addClrs(g, npl);
+			remClrs(g); addClrs(g, npl);
 		}
 		if(afs === 'autofill'){
-			remClrs(g);
-			addClrs(g, npl);
-			processAfs(g, npl, gcpmtb, ltr);
+			remClrs(g); addClrs(g, npl); processAfs(g, npl, gcpmtb, ltr);
 		}
 	};
 	
@@ -250,14 +237,10 @@ function miuGridProcessor () {
 				cs = document.querySelectorAll(selector + ' > .miu-g-in > .miu-g-cell');
 			var i = 0, ttlProp = 0;
 			for(i = 0; i < cs.length; i++){
-				var c = cs[i],
-					p = getProp(c);
+				var c = cs[i], p = getProp(c);
 				if(ttlProp + p > npl){
-					gIn.insertBefore(miuLib.getClr(), c);
-					ttlProp = p;
-				}else{
-					ttlProp += p;
-				}
+					gIn.insertBefore(miuLib.getClr(), c); ttlProp = p;
+				}else{ttlProp += p;}
 			}
 		}
 	};
