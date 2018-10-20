@@ -301,9 +301,9 @@ function miuGridProcessor () {
 					var gcwf = p.cwfixed ? p.cwfixed : ((g.getAttribute('miu-g-cwfixed')) ? g.getAttribute('miu-g-cwfixed') : 'fixed');
 					var gcmw = p.refwidth ? p.refwidth : ((g.getAttribute('miu-g-refwidth')) ? parseFloat(g.getAttribute('miu-g-refwidth'), 10) : 200);
 					var gcpmlr = p.lrgap ? p.lrgap / 2 : ((g.getAttribute('miu-g-lrgap')) ? parseFloat(g.getAttribute('miu-g-lrgap'), 10) / 2 : 0);
-					var gcpmtb = p.tbgap ? p.tbgap / 2 : ((g.getAttribute('miu-g-btgap')) ? parseFloat(g.getAttribute('miu-g-btgap'), 10) / 2 : 0);
+					var gcpmtb = p.tbgap ? p.tbgap / 2 : ((g.getAttribute('miu-g-tbgap')) ? parseFloat(g.getAttribute('miu-g-tbgap'), 10) / 2 : 0);
 					var gd = p.display ? p.display : ((g.getAttribute('miu-g-display')) ? g.getAttribute('miu-g-display') : 'table');
-					var gfr = p.fullresp ? p.fullresp : ((g.getAttribute('miu-g-fullresp')) ? g.getAttribute('miu-g-fullresp') : false);
+					var gfr = p.fullresp ? p.fullresp : ((g.getAttribute('miu-g-fullresp')) ? (g.getAttribute('miu-g-fullresp') == 'true' ? true : false) : false);
 					var ltr = p.ltr ? p.ltr : ((g.getAttribute('miu-g-ltr')) ? g.getAttribute('miu-g-ltr') : 'ltr');
 					if(g){
 						miuLib.addClass(g, 'miu-g');
