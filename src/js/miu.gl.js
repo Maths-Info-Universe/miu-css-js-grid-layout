@@ -1,96 +1,9 @@
 /**
- *	Some reusable functions
-**/
-
-function miuLibFn () {
-	/* A simple function to add a new class value to an elt */
-	this.addClass = function(elt, newClass) {
-		var myArr = elt.className.split(' ');
-		if (myArr.indexOf(newClass) == -1) {
-			elt.className += ' ' + newClass;
-		}
-	};
-
-	this.hasClass = function(elt, classToCheck) {
-		if(!elt || !elt.className)
-			return false;
-		var myArr = elt.className.split(' ');
-		return myArr.indexOf(classToCheck) != -1;
-	};
-
-	this.remClass = function(elt, classToRem) {
-		var myArr = elt.className.split(' '),
-			i = 0, newClassName = '';
-		for(i = 0; i < myArr.length; i++){
-			if(myArr[i] !== classToRem){
-				newClassName += myArr[i] + ' ';
-			}
-		}
-		elt.className = newClassName.trim();
-	};
-
-	/* A simple function to wrap all innerHTML of an elt into another elt */
-	this.wrap = function(toWrPrt, wr) {
-		wr.innerHTML = toWrPrt.innerHTML;
-		toWrPrt.innerHTML = '';
-		toWrPrt.appendChild(wr);
-	};
-
-	this.getStyleVal = function(elt, p) {
-		var value = window.getComputedStyle(elt).getPropertyValue(p);
-		return parseFloat(value.substring(0, value.length - 2), 10);
-	};
-	
-	this.getClr = function() {
-		var clr = document.createElement('div');
-		this.addClass(clr, 'miu-clr');
-		clr.style.clear = 'both';
-		return clr;
-	};
-	
-	this.getGap = function(width, height) {
-		var gap = document.createElement('div');
-		this.addClass(gap, 'miu-gap');
-		gap.style.width = (width == -1) ? 'auto' : width + 'px';
-		gap.style.height = (height == -1) ? 'auto' : height + 'px';
-		gap.style.marginTop = '0px';
-		gap.style.marginBottom = '0px';
-		gap.style.marginLeft = '0px';
-		gap.style.marginRight = '0px';
-		return gap;
-	};
-
-	this.addClr = function(elt) {
-		var clr = this.getClr();
-		elt.appendChild(clr);
-	};
-	
-	this.addGap = function(elt, width, height) {
-		var gap = this.getGap(width, height);
-		elt.appendChild(gap);
-	};
-	
-	this.remChildsWithClass = function(prt, className) {
-		var childs = prt.childNodes,
-			i = 0;
-		for(i = 0; i < childs.length; i++){
-			var child = childs[i];
-			if(this.hasClass(child, className)){
-				prt.removeChild(child);
-			}
-		}
-	};
-}
-var miuLib = new miuLibFn;
-
-
-/**
  *	JS Processor for MIU Grid Component
 **/
 function miuGridProcessor () {
-	if(!miuLib){
-		console.log('MIU Library is required');
-		return false;
+	if(typeof miuDomLib === 'undefined') {
+		throw new Error('MIU DOM Library is required for MIU Grid')
 	}
 	
 	/* A simple function to get the proportion of a c */
@@ -116,8 +29,8 @@ function miuGridProcessor () {
 			cIn = document.createElement('div');
 			cIn.style.marginLeft = 'auto';
 			cIn.style.marginRight = 'auto';
-			miuLib.addClass(cIn, 'miu-g-cell-in');
-			miuLib.wrap(cs[i], cIn);
+			miuDomLib.addClass(cIn, 'miu-g-cell-in');
+			miuDomLib.wrap(cs[i], cIn);
 		}
 	};
 
@@ -125,14 +38,14 @@ function miuGridProcessor () {
 		var gIn = document.createElement('div');
 		gIn.style.marginLeft = 'auto';
 		gIn.style.marginRight = 'auto';
-		miuLib.addClass(gIn, 'miu-g-in');
-		miuLib.wrap(g, gIn);
+		miuDomLib.addClass(gIn, 'miu-g-in');
+		miuDomLib.wrap(g, gIn);
 	};
 
 	var updateGridCW = function(g, gcwf, gcmw, gcpmlr, gcpmtb, afs, gfr, ltr) {
 		var gcr = gcwf === 'responsive',
 			selector = g.getAttribute('miu-g-selector'),
-			gwd = miuLib.getStyleVal(g, 'width') + 5,
+			gwd = miuDomLib.getStyleVal(g, 'width') + 5,
 			npl = Math.floor(gwd / ((gcmw) + 2 * gcpmlr));
 			if(npl < 1) npl = 1;
 		var ngcwd = (gwd / npl) - (2 * gcpmlr),
@@ -161,10 +74,10 @@ function miuGridProcessor () {
 			var c = csIn[i].parentNode, p = getProp(c);
 			csIn[i].style.width = (gcmw * p) + 'px';
 			var k = ngcmg * (p - 1);
-			var toRem = miuLib.getStyleVal(c, 'padding-left');
-			toRem += miuLib.getStyleVal(c, 'padding-right');
-			toRem += miuLib.getStyleVal(c, 'border-left-width');
-			toRem += miuLib.getStyleVal(c, 'border-right-width');
+			var toRem = miuDomLib.getStyleVal(c, 'padding-left');
+			toRem += miuDomLib.getStyleVal(c, 'padding-right');
+			toRem += miuDomLib.getStyleVal(c, 'border-left-width');
+			toRem += miuDomLib.getStyleVal(c, 'border-right-width');
 			var cellWd = ngcwd * p + (2 * k) - toRem;
 			if(!gfr && cellWd < gcmw){cellWd = gcmw;}
 			if(gfr && cellWd >= (gInWd - 2 * ngcmg)){
@@ -186,9 +99,9 @@ function miuGridProcessor () {
 						toAdd = remSpace / lcs.length, k = 0;
 					for(k = 0; k < lcs.length; k++){
 						if(gcr){
-							csIn[lcs[k].index].style.width = (miuLib.getStyleVal(csIn[lcs[k].index], 'width') + toAdd) + 'px';
+							csIn[lcs[k].index].style.width = (miuDomLib.getStyleVal(csIn[lcs[k].index], 'width') + toAdd) + 'px';
 						}
-						lcs[k].c.style.width = (miuLib.getStyleVal(lcs[k].c, 'width') + toAdd) + 'px';
+						lcs[k].c.style.width = (miuDomLib.getStyleVal(lcs[k].c, 'width') + toAdd) + 'px';
 					}
 					lcs = [{'index': i, 'c': c}]; j = 1; psum = p;
 				}else{
@@ -206,9 +119,9 @@ function miuGridProcessor () {
 					toAdd = remSpace / lcs.length, k = 0;
 				for(k = 0; k < lcs.length; k++){
 					if(gcr){
-						csIn[lcs[k].index].style.width = (miuLib.getStyleVal(csIn[lcs[k].index], 'width') + toAdd) + 'px';
+						csIn[lcs[k].index].style.width = (miuDomLib.getStyleVal(csIn[lcs[k].index], 'width') + toAdd) + 'px';
 					}
-					lcs[k].c.style.width = (miuLib.getStyleVal(lcs[k].c, 'width') + toAdd) + 'px';
+					lcs[k].c.style.width = (miuDomLib.getStyleVal(lcs[k].c, 'width') + toAdd) + 'px';
 				}
 			}
 		}
@@ -227,7 +140,7 @@ function miuGridProcessor () {
 	var remClrs = function(g) {
 		var selector = g.getAttribute('miu-g-selector'),
 			gIn = document.querySelector(selector + ' > .miu-g-in');
-		miuLib.remChildsWithClass(gIn, 'miu-clr');
+		miuDomLib.remChildsWithClass(gIn, 'miu-clr');
 	};
 	
 	var addClrs = function(g, npl) {
@@ -239,7 +152,7 @@ function miuGridProcessor () {
 			for(i = 0; i < cs.length; i++){
 				var c = cs[i], p = getProp(c);
 				if(ttlProp + p > npl){
-					gIn.insertBefore(miuLib.getClr(), c); ttlProp = p;
+					gIn.insertBefore(miuDomLib.getClr(), c); ttlProp = p;
 				}else{ttlProp += p;}
 			}
 		}
@@ -268,7 +181,7 @@ function miuGridProcessor () {
 					for(j = 0; j < npl; j++){
 						var c = cs[i + j];
 						if(c){
-							lineHs[j] = miuLib.getStyleVal(c, 'height');
+							lineHs[j] = miuDomLib.getStyleVal(c, 'height');
 							maxH = (maxH < lineHs[j]) ? lineHs[j] : maxH;
 							if(toRet[j] > 0){
 								c.style.marginTop = (-toRet[j]) + 'px';
@@ -281,7 +194,7 @@ function miuGridProcessor () {
 						var c = cs[i + j];
 						if(c){
 							c.style.height = (maxH + toRet[j]) + 'px';
-							toRet[j] += (maxH - lineHs[j] - gcpmtb + miuLib.getStyleVal(c, 'border-bottom-width'));
+							toRet[j] += (maxH - lineHs[j] - gcpmtb + miuDomLib.getStyleVal(c, 'border-bottom-width'));
 						}
 					}
 				}
@@ -297,7 +210,7 @@ function miuGridProcessor () {
 				i = 0;
 			for(i = 0; i < gs.length; i++){
 				var g = gs[i];
-				if(!miuLib.hasClass(g, 'miu-g')){
+				if(!miuDomLib.hasClass(g, 'miu-g')){
 					var gcwf = p.cwfixed ? p.cwfixed : ((g.getAttribute('miu-g-cwfixed')) ? g.getAttribute('miu-g-cwfixed') : 'fixed');
 					var gcmw = p.refwidth ? p.refwidth : ((g.getAttribute('miu-g-refwidth')) ? parseFloat(g.getAttribute('miu-g-refwidth'), 10) : 200);
 					var gcpmlr = p.lrgap ? p.lrgap / 2 : ((g.getAttribute('miu-g-lrgap')) ? parseFloat(g.getAttribute('miu-g-lrgap'), 10) / 2 : 0);
@@ -306,9 +219,9 @@ function miuGridProcessor () {
 					var gfr = p.fullresp ? p.fullresp : ((g.getAttribute('miu-g-fullresp')) ? (g.getAttribute('miu-g-fullresp') == 'true' ? true : false) : false);
 					var ltr = p.ltr ? p.ltr : ((g.getAttribute('miu-g-ltr')) ? g.getAttribute('miu-g-ltr') : 'ltr');
 					if(g){
-						miuLib.addClass(g, 'miu-g');
+						miuDomLib.addClass(g, 'miu-g');
 						var uqClass = 'miu-g-' + (2475 + document.querySelectorAll('.miu-g').length);
-						miuLib.addClass(g, uqClass);
+						miuDomLib.addClass(g, uqClass);
 						var gSel = '.' + uqClass;
 						g.setAttribute('miu-g-selector', gSel);
 						g.setAttribute('miu-g-cwfixed', gcwf);
@@ -321,7 +234,7 @@ function miuGridProcessor () {
 						ltr = ltr === 'rtl' ? 'right' : 'left';
 						
 						wrapGrid(g);
-						miuLib.addClr(g);
+						miuDomLib.addClr(g);
 						wrapGridCells(gSel);
 						updateGridCW(g, gcwf, gcmw, gcpmlr, gcpmtb, gd, gfr, ltr);
 					}
@@ -337,12 +250,12 @@ function miuGridProcessor () {
 				i = 0;
 			for(i = 0; i < gsToInit.length; i++){
 				var gToInit = gsToInit[i];
-				if(!miuLib.hasClass(gToInit, 'miu-g')){
-					miuLib.addClass(gToInit, 'miu-g-ai');
+				if(!miuDomLib.hasClass(gToInit, 'miu-g')){
+					miuDomLib.addClass(gToInit, 'miu-g-ai');
 					var aiClass = 'miu-g-ai-' + (1356 + i);
-					miuLib.addClass(gToInit, aiClass);
+					miuDomLib.addClass(gToInit, aiClass);
 					miuGrid.initGrid({selector: '.' + aiClass});
-					miuLib.remClass(gToInit, aiClass);
+					miuDomLib.remClass(gToInit, aiClass);
 				}
 			}
 			window.onresize = function(e) {
